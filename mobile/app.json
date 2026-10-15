@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Junto",
+    "slug": "junto-mercado-colectivo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "junto",
+    "android": {
+      "package": "pe.junto.app",
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "pe.junto.app"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#136a50"
+        }
+      ],
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "98d93504-a590-4bc3-b43b-67acce55f7bc"
+      }
+    },
+    "owner": "crihistiancast"
+  }
+}

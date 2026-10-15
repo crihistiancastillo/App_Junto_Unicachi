@@ -1,0 +1,48 @@
+# Levanta la base de datos demo, la API y el servicio de ML:
+#   docker compose up --build
+# La app móvil se ejecuta aparte con Expo (ver README).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: junto
+      POSTGRES_USER: junto
+      POSTGRES_PASSWORD: junto
+      TZ: America/Lima
+    ports: ["5432:5432"]
+    volumes:
+      # Se ejecutan en orden alfabético solo la primera vez (volumen vacío)
+      - ./database:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U junto -d junto"]
+      interval: 5s
+      retries: 10
+
+  ml:
+    build: ./ml-service
+    environment:
+      DATABASE_URL: postgresql://junto:junto@db:5432/junto
+      ML_INTERNAL_KEY: dev-internal-key
+    ports: ["8000:8000"]
+    depends_on:
+      db: { condition: service_healthy }
+
+  api:
+    build: ./api
+    environment:
+      NODE_ENV: development        # DEMO_MODE no se permite en production
+      PORT: 3000
+      DATABASE_URL: postgres://junto:junto@db:5432/junto
+      DEMO_MODE: "true"
+      ML_URL: http://ml:8000
+      ML_INTERNAL_KEY: dev-internal-key
+      PAYMENT_GATEWAY: fake
+      JOB_INTERVAL_MS: 60000
+    ports: ["3000:3000"]
+    depends_on:
+      db: { condition: service_healthy }
+      ml: { condition: service_started }
+
+volumes:
+  pgdata:
